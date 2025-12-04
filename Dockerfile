@@ -5,6 +5,6 @@ ENV MONGO_DB_USERNAME=admin \
 
 RUN mkdir -p /home/app
 
-COPY . /mnt/c/Users/ifezu/OneDrive/Desktop/Docker
+COPY . /home/app
 
-CMD ["node", "/mnt/c/Users/ifezu/OneDrive/Desktop/Docker/server.js"]
+CMD ["node", "/home/app/server.js"]
