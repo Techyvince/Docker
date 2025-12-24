@@ -1,0 +1,27 @@
+---
+services:
+  nagios:
+    build: .
+    container_name: nagios
+    #image: tedleyem/nagios:4.5.7
+    ports:
+      - "8080:80"
+    volumes:
+    # comment the following lines if you want to use docker volumes
+    - ./overlay/opt/nagios/etc:/opt/nagios/etc
+    - ./overlay/opt:/opt/nagios/opt
+    - ./overlay/usr:/opt/nagios/usr
+    # Docker Volumes
+    # uncomment the bottom lines if you want to use docker volumes
+    #- nagiosetc:/opt/nagios/etc
+    #- nagiosvar:/opt/nagios/var
+    #- customplugins:/opt/Custom-Nagios-Plugins
+    #- nagiosgraphvar:/opt/nagiosgraph/var
+    #- nagiosgraphetc:/opt/nagiosgraph/etc
+
+volumes:
+    nagiosetc:
+    nagiosvar:
+    customplugins:
+    nagiosgraphvar:
+    nagiosgraphetc:

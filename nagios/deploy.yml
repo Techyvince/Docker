@@ -1,0 +1,31 @@
+---
+- name: Initial Deployment
+  hosts: servers
+  become: yes
+  vars:
+    nagios_dir: /opt/nagios
+    source_repo_path: "{{ repo_path }}"
+
+  tasks:
+    - name: Install Docker using Ansible Role
+      ansible.builtin.import_role:
+        name: tedleyem.ansible_docker_role
+
+    - name: Create /opt/nagios directory if it does not exist
+      ansible.builtin.file:
+        path: "{{ nagios_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Copy repository contents to /opt/nagios
+      ansible.builtin.copy:
+        src: "{{ source_repo_path }}/"
+        dest: "{{ nagios_dir }}/"
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Run docker-compose up
+      ansible.builtin.shell:
+        cmd: docker-compose up -d
+        chdir: "{{ nagios_dir }}"

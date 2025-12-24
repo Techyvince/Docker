@@ -1,0 +1,48 @@
+name: Update Deployment on Push
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+    if: github.event.pull_request.merged == true
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          
+      - name: Remote Deployment Update
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.TARGET_HOST_IP }}
+          username: ${{ secrets.ANSIBLE_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            NAGIOS_DIR="/opt/nagios"
+            
+            # Change to the deployment directory
+            cd "$NAGIOS_DIR"
+            
+            # Bring down containers gracefully
+            echo "Stopping and removing existing containers..."
+            docker-compose down
+            
+            # Pull the latest code from the main branch
+            echo "Pulling latest changes from Git..."
+            git pull origin main
+            
+            # Rebuild and start the services
+            echo "Starting new containers..."
+            docker-compose up --build -d
+            
+            echo "Deployment update complete."
